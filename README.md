@@ -1,4 +1,4 @@
-WORK IN PROGRESS IT IS NOT FULLY WORKING YET
+WORK IN PROGRESS IT IS NOT FULLY FINISHED
 
 [**View Current Live Demo 👉**](\https://ict1-website.netlify.app/)
 
