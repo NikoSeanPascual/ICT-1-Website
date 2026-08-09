@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev-Folio: Niko Sean Pascual</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #050806;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .global-audio-player {
+            position: fixed;
+            top: 15px;
+            right: 35px;
+            z-index: 9999;
+            background: rgba(12, 22, 16, 0.9);
+            border: 1px solid #123820;
+            padding: 8px 14px;
+            border-radius: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .audio-label {
+            font-family: 'Jersey 10', 'Courier New', monospace;
+            font-size: 16px;
+            color: #00ff66;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .global-audio-player audio {
+            height: 30px;
+            width: 240px;
+            filter: sepia(100%) hue-rotate(85deg) saturate(400%) contrast(1.2);
+        }
+    </style>
+</head>
+<body>
+<!-- basically yung buong ay inaallow na hindi mag reset yung Background Music -->
+<div class="global-audio-player">
+    <span class="audio-label">♫ MUSIC</span>
+    <audio controls autoplay loop>
+        <source src="../media/background_music.wav" type="audio/wav">
+    </audio>
+</div>
+
+<iframe src="../html/home.html" name="portfolio-frame"></iframe>
+
+</body>
+</html>

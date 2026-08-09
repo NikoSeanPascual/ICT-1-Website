@@ -24,7 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const terminalTitle = document.getElementById('terminalTitle');
     const nodeBadge = document.getElementById('nodeBadge');
 
-    /*SCALABLE ROSTER DATABASE ARRAY*/
+    // Social Feed Element
+    const eventsFeed = document.getElementById('eventsFeed');
+
+    /* SCALABLE DATABASE 1: CLASS ROSTER */
     const classmates = [
         {
             name: "Niko Sean Pascual(Creator)",
@@ -38,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
             favColor: "Unknown",
             photo: "assets/classmates/Apat.jpg"
         },
-        /*NOT FINISHED*/
         {
             name: "Lowell Kyle Aquino",
             hobby: "Unknown",
@@ -244,11 +246,27 @@ document.addEventListener('DOMContentLoaded', () => {
             photo: "assets/classmates/Zamora.jpg"
         },
     ];
+    /* SCALABLE DATABASE 2: SOCIAL EVENTS LOG: Copy and paste a new block here to add future images! */
+    const eventsData = [
+        {
+            id: 1,
+            image: "assets/event_1.jpg",
+            caption: "> LOG_ENTRY_001: Us at the mall where we later eat food and play Mobile Legend in the Food Court, After a computer programming activity
+            likes: 43,
+            isLiked: false,
+            comments: [
+                { user: "SYSTEM_ARCHITECT", text: "Core memories successfully archived." },
+                { user: "USER_NODE_89", text: "Such a great day!" }
+            ]
+        }
+        // Pasting a new { id: 2, image: "assets/event_2.jpg"... } will auto-generate below this!
+    ];
 
-    /*DIRECTORY ENGINE RENDER LOGIC*/
+    /* ==========================================
+       1. DIRECTORY & SOCIAL FEED RENDER ENGINES
+       ========================================== */
     function renderRosterDirectory() {
         rosterGrid.innerHTML = "";
-
         classmates.forEach(student => {
             const card = document.createElement('div');
             card.className = 'roster-card';
@@ -264,43 +282,113 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /*INTERFACE NAVIGATION ROUTING (WITH GLITCH ENGINE)*/
+    function renderSocialFeed() {
+        if (!eventsFeed) return;
+        eventsFeed.innerHTML = "";
+
+        eventsData.forEach(event => {
+            const card = document.createElement('div');
+            card.className = 'event-card';
+
+            const likeText = event.isLiked ? `[LIKED: ${event.likes}]` : `[LIKE: ${event.likes}]`;
+            const likeClass = event.isLiked ? 'action-btn liked' : 'action-btn';
+
+            const commentsHTML = event.comments.map(c =>
+                `<div class="comment-item"><strong>${c.user}:</strong> ${c.text}</div>`
+            ).join('');
+
+            card.innerHTML = `
+                <img src="${event.image}" alt="Event Node" class="event-img" onerror="this.src='https://placehold.co/600x400/000000/00FF00?text=IMAGE_OFFLINE'"/>
+                <div class="event-caption">${event.caption}</div>
+
+                <div class="event-actions">
+                    <button class="${likeClass} like-btn" data-id="${event.id}">
+                        <i class="fas fa-heart"></i> <span>${likeText}</span>
+                    </button>
+                    <button class="action-btn">
+                        <i class="fas fa-comment"></i> [COMMENTS: ${event.comments.length}]
+                    </button>
+                </div>
+
+                <div class="comments-section">
+                    ${commentsHTML}
+                </div>
+
+                <div class="comment-input-group">
+                    <input type="text" id="comment-input-${event.id}" placeholder="> TYPE COMMENT OVERRIDE..." autocomplete="off"/>
+                    <button class="cyber-btn-secondary submit-comment-btn" data-id="${event.id}">TRANSMIT</button>
+                </div>
+            `;
+            eventsFeed.appendChild(card);
+        });
+    }
+
+    // INTERACTIVE FEED LISTENER: Handles Likes and Comments safely dynamically
+    if (eventsFeed) {
+        eventsFeed.addEventListener('click', (e) => {
+            // Like Button Logic
+            const likeBtn = e.target.closest('.like-btn');
+            if (likeBtn) {
+                const eventId = parseInt(likeBtn.getAttribute('data-id'));
+                const targetEvent = eventsData.find(ev => ev.id === eventId);
+                if (targetEvent) {
+                    targetEvent.isLiked = !targetEvent.isLiked;
+                    targetEvent.likes += targetEvent.isLiked ? 1 : -1;
+                    renderSocialFeed(); // Refresh interface
+                }
+            }
+
+            // Comment Submit Logic
+            const submitBtn = e.target.closest('.submit-comment-btn');
+            if (submitBtn) {
+                const eventId = parseInt(submitBtn.getAttribute('data-id'));
+                const inputField = document.getElementById(`comment-input-${eventId}`);
+
+                if (inputField && inputField.value.trim() !== '') {
+                    const targetEvent = eventsData.find(ev => ev.id === eventId);
+                    targetEvent.comments.push({
+                        user: "ACTIVE_USER", // Hardcoded for session
+                        text: inputField.value.trim()
+                    });
+                    renderSocialFeed(); // Refresh interface
+                }
+            }
+        });
+    }
+
+    /* ==========================================
+       2. INTERFACE NAVIGATION ROUTING
+       ========================================== */
     rosterToggle.addEventListener('click', () => {
         loginCard.classList.add('terminal-glitch-active');
-
         setTimeout(() => {
             renderRosterDirectory();
             galleryWrapper.classList.add('hidden');
             rosterZone.classList.remove('hidden');
-            rosterToggle.classList.add('hidden'); // Clear button on entry
+            rosterToggle.classList.add('hidden');
 
             terminalTitle.textContent = "SYSTEM.DB // ICT-1_ROSTER";
             nodeBadge.textContent = "DIRECTORY_ACTIVE";
         }, 220);
-
-        setTimeout(() => {
-            loginCard.classList.remove('terminal-glitch-active');
-        }, 450);
+        setTimeout(() => loginCard.classList.remove('terminal-glitch-active'), 450);
     });
 
     backToMainBtn.addEventListener('click', () => {
         loginCard.classList.add('terminal-glitch-active');
-
         setTimeout(() => {
             rosterZone.classList.add('hidden');
             galleryWrapper.classList.remove('hidden');
-            rosterToggle.classList.remove('hidden'); // Restore button visibility
+            rosterToggle.classList.remove('hidden');
 
             terminalTitle.textContent = "SYSTEM.INIT // ICT-1";
             nodeBadge.textContent = "SECURE_NODE";
         }, 220);
-
-        setTimeout(() => {
-            loginCard.classList.remove('terminal-glitch-active');
-        }, 450);
+        setTimeout(() => loginCard.classList.remove('terminal-glitch-active'), 450);
     });
 
-    /*INTERFACE THEME STABILIZER*/
+    /* ==========================================
+       3. INTERFACE THEME STABILIZER
+       ========================================== */
     themeToggle.addEventListener('click', () => {
         const root = document.documentElement;
         const currentTheme = root.getAttribute('data-theme');
@@ -317,20 +405,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    /*AUTHENTICATION TRANSACTION CONTROLLER*/
+    /* AUTHENTICATION TRANSACTION CONTROLLER */
     const processLogin = () => {
         const result = verifyCredentials(usernameInput.value, passwordInput.value);
 
         if (result.success) {
             authStatus.textContent = result.message;
             authStatus.style.color = 'var(--accent-color)';
-            renderMockCards();
+            renderSocialFeed(); // Call new feed engine upon entry!
 
             setTimeout(() => {
                 loginCard.classList.add('dashboard-expanded');
                 authPanel.classList.add('hidden');
                 galleryWrapper.classList.remove('hidden');
-                rosterToggle.classList.remove('hidden'); // Reveal directory badge inline
+                rosterToggle.classList.remove('hidden');
             }, 600);
         } else {
             authStatus.textContent = `CRITICAL_ERROR: ${result.message}`;
@@ -339,26 +427,6 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => loginCard.classList.remove('terminal-error-shake'), 400);
         }
     };
-
-    function renderMockCards() {
-        const memoryGrid = document.getElementById('memoryGrid');
-        memoryGrid.innerHTML = `
-            <div class="student-card">
-                <div class="card-inner">
-                    <h3>YOUR NAME GOES HERE</h3>
-                    <span class="student-role">SYSTEM_ARCHITECT</span>
-                    <p class="student-bio">"Building industrial-grade front-end code bases while others use copy-paste templates."</p>
-                </div>
-            </div>
-            <div class="student-card">
-                <div class="card-inner">
-                    <h3>CLASS_MEMORIES_01</h3>
-                    <span class="student-role">LOG_ENTRY_NODE</span>
-                    <p class="student-bio">"ICT-1 Launch Day project terminal interface module fully operational."</p>
-                </div>
-            </div>
-        `;
-    }
 
     loginBtn.addEventListener('click', processLogin);
     passwordInput.addEventListener('keypress', (e) => {
